@@ -1,0 +1,28 @@
+let
+  function read_unsigned() : int =
+    let
+      function helper(acc : int, read : int) : int =
+        let
+          var c := getchar()
+        in
+          if c = "" then
+            if read = 1 then acc else -1
+          else if c = "\n" then
+            if read = 1 then acc else -1
+          else
+            let
+              var code := ord(c)
+            in
+              if code >= 48 & code <= 57 then
+                helper(acc * 10 + (code - 48), 1)
+              else
+                -1
+            end
+        end
+    in
+      helper(0, 0)
+    end
+in
+  print_int(read_unsigned() * 2);
+  print("\n")
+end
