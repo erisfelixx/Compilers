@@ -72,6 +72,8 @@ id              [a-zA-Z][_0-9a-zA-Z]*
 
  /* Keywords */
 
+if       return yy::tiger_parser::make_IF(loc);
+then     return yy::tiger_parser::make_THEN(loc);
 else     return yy::tiger_parser::make_ELSE(loc);
 while    return yy::tiger_parser::make_WHILE(loc);
 for      return yy::tiger_parser::make_FOR(loc);
@@ -86,6 +88,18 @@ var      return yy::tiger_parser::make_VAR(loc);
 
  /* Identifiers */
 {id}       return yy::tiger_parser::make_ID(Symbol(yytext), loc);
+
+ /* Integers */
+[0-9]+ {
+    if (yytext[0] == '0' && yyleng > 1) {
+        utils::error(loc, "invalid integer with leading zero");
+    }
+    long val = strtol(yytext, nullptr, 10);
+    if (val > TIGER_INT_MAX) {
+        utils::error(loc, "integer out of range");
+    }
+    return yy::tiger_parser::make_INT(val, loc);
+}
 
  /* Strings */
 \" {BEGIN(STRING); string_buffer.clear();}

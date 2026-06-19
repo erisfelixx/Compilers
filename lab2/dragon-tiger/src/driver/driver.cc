@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "../ast/ast_dumper.hh"
+#include "../ast/evaluator.hh" // наш новий калькулятор
 #include "../parser/parser_driver.hh"
 #include "../utils/errors.hh"
 
@@ -12,6 +13,7 @@ int main(int argc, char **argv) {
   options.add_options()
   ("help,h", "describe arguments")
   ("dump-ast", "dump the parsed AST")
+  ("eval,e", "evaluate the AST") // -e
   ("trace-parser", "enable parser traces")
   ("trace-lexer", "enable lexer traces")
   ("verbose,v", "be verbose")
@@ -33,6 +35,11 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+  // конфлікт --dump-ast і -e 
+  if (vm.count("dump-ast") && vm.count("eval")) {
+    utils::error("cannot use both --dump-ast and --eval");
+  }
+
   if (input_files.size() != 1) {
     utils::error("usage: dtiger [options] input-file");
   }
@@ -48,6 +55,13 @@ int main(int argc, char **argv) {
     parser_driver.result_ast->accept(dumper);
     dumper.nl();
   }
+
+  // Обчислення дерева
+  if (vm.count("eval") && parser_driver.result_ast != nullptr) {
+    ast::Evaluator evaluator;
+    std::cout << parser_driver.result_ast->accept(evaluator) << std::endl;
+  }
+
   delete parser_driver.result_ast;
   return 0;
 }

@@ -39,6 +39,8 @@ typedef enum {
 const std::string operator_name[] = {"+",  "-", "*",  "/", "=",
                                      "<>", "<", "<=", ">", ">="};
 
+//Для етапів компіляції, де дерево треба переробити, спростити або оптимізувати.
+//Нічо не повертає, але може змінювати вузли дерев
 class ASTVisitor {
 public:
   virtual void visit(class IntegerLiteral &) = 0;
@@ -58,6 +60,8 @@ public:
   virtual ~ASTVisitor() {}
 };
 
+//ЗАБОРОНЕНО шось змінювати
+// Для безпечного аналізу або друку дерева (--dump-ast використовує саме його, бо йому треба просто намалювати дерево, нічого не зламавши)
 class ConstASTVisitor {
 public:
   virtual void visit(const class IntegerLiteral &) = 0;
@@ -77,6 +81,9 @@ public:
   virtual ~ConstASTVisitor() {}
 };
 
+// осьо він красавєц.
+
+//Читає дерево і повертає ціле число
 class ConstASTIntVisitor {
 public:
   virtual int32_t visit(const class IntegerLiteral &) = 0;
